@@ -1,9 +1,8 @@
-
 Breve descrição do grupo
 
-* Turno: [LM]XX
-* Grupo: YY
+* Turno: L01
+* Grupo: 02
 * Alunos:
-    - Aluno1 upZZZZZ 
-    - Aluno2 upZZZZZ
-    - Aluno3 upZZZZZ
+    - David dos Santos Ferreira up202006302
+    - Pedro Pereira Ferreira up202004986
+    - Ricardo António Pinto da Cruz up202008789
