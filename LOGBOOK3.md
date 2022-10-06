@@ -1,5 +1,9 @@
 # Trabalho realizado na Semana #3
 
+### CVE-2022-26959 SQL Injection 
+
+### Grupo L01G02
+
 ## Identificação
 
 - A NorthStar Club Management é uma empresa de gestão dados de clubes e tinha uma vulnerabilidade de SQL-Injection.
