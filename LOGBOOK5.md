@@ -1,6 +1,5 @@
 # Work on week #5
 
-
 ## Tasks done
 
 ### 1
@@ -182,4 +181,154 @@ f.write(content)
 ![](https://i.imgur.com/K5rpE74.png)
 
 
+### CTF's
 
+#### Challenge 1
+
+* In order to complete this challenge, we have to answer the following questions:
+
+1. Is there any file which is opened and read by the program?
+
+2. Is it possible to control the opened file?
+
+3. Is there any buffer-overflow vulnerability? If so, what can be done?
+
+* If we analyse carefully the 'main.c' file, we can answer the previous questions.
+
+> main.c:
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    char meme_file[8] = "mem.txt\0";
+    char buffer[20];
+
+    printf("Try to unlock the flag.\n");
+    printf("Show me what you got:");
+    fflush(stdout);
+    scanf("%28s", &buffer);
+
+    printf("Echo %s\n", buffer);
+
+    printf("I like what you got!\n");
+    
+    FILE *fd = fopen(meme_file,"r");
+    
+    while(1){
+        if(fd != NULL && fgets(buffer, 20, fd) != NULL) {
+            printf("%s", buffer);
+        } else {
+            break;
+        }
+    }
+
+
+    fflush(stdout);
+    
+    return 0;
+}
+```
+
+1) Is there any file which is opened and read by the program?
+
+> Yes, the "mem.txt" is opened and read by the program.
+
+![](https://i.imgur.com/HyeparZ.png)
+
+2) Is it possible to control the opened file?
+
+> Yes, I can alter the content of the variable meme_file, by swithing the content of that variable.
+
+3) Is there any buffer-overflow vulnerability? If so, what can be done?
+
+> Yes, it has: the buffer has 20B long, however, scanf will read 28. So, we can overwrite the buffer and since the variable meme_file has 8B long and it is called before the buffer.
+
+![](https://i.imgur.com/ChN6FCN.png)
+
+
+* So, to explore this vulnerability, that is, to overwrite the buffer, we opened the 'exploit-example.py' and tried in debug mode to insert 20 random characters, which corresponds the 20B of the buffer. Then we added to it the name of the file to be read, "flag.txt" which has 8B long, the same size of the ```meme_file```.
+
+![](https://i.imgur.com/YTrW12z.png)
+
+* After run it, we obtained the content of the file, the flag_placeholder, which means we successfully accessed the content of the file.
+
+![](https://i.imgur.com/TznnB9Y.png)
+
+* Finally, we turned off the debug mode, by asserted the ```DEBUG``` variable as False and runned the 'exploit-example.py'. As a result, we obtained the flag value.
+
+![](https://i.imgur.com/cjahTZq.png)
+
+
+#### Challenge 2
+
+* In order to complete this CTF, we have to answer these questions:
+
+1. What changes were made?
+
+2. Did they solve completely the problem?
+
+3. Is it possible to overcome those changes with a similar approach?
+
+* We started to analyse the "main.c" in order to answer the previous questions.
+
+> main.c
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    char meme_file[8] = "mem.txt\0";
+    char val[4] = "\xef\xbe\xad\xde";
+    char buffer[20];
+
+    printf("Try to unlock the flag.\n");
+    printf("Show me what you got:");
+    fflush(stdout);
+    scanf("%32s", &buffer);
+    if(*(int*)val == 0xfefc2223) {
+        printf("I like what you got!\n");
+        
+        FILE *fd = fopen(meme_file,"r");
+        
+        while(1){
+            if(fd != NULL && fgets(buffer, 20, fd) != NULL) {
+                printf("%s", buffer);
+            } else {
+                break;
+            }
+        }
+    } else {
+        printf("You gave me this %s and the value was %p. Disqualified!\n", meme_file, *(long*)val);
+    }
+
+    fflush(stdout);
+    
+    return 0;
+}
+```
+
+* We noticed that there was an extra variable called "val" and the scanf scans more bytes than before (now scans 32B).
+
+![](https://i.imgur.com/j8O9aef.png)
+
+
+* Secondly, it seems to solve the problem, in fact, since it is necessary that "val" needs to have a specific value to read a file, working like a token, which should lead to a more secure algorithm. However, once we insert the correct value of "val", the same problem persists. In other words, the program still has the buffer-overflow vulnerability.
+
+* In conclusion, we can overcome the mitigations of the problem using a similar strategy used in CTF #1- we can add the same random bytes and the file name pretended, but we need to put between them value of ```val```, since sum of size of this variable and she size of the buffer and ```meme_file``` equals to 32B, the number of the bytes read by scanf.
+
+* We have everything we need to attack the vulnerability. In a first approach, we modified the exploit-example.py to debug mode, that is, assert the variable ```DEBUG``` as True, switched to the correct port (for this challenge was 4000) and inserted the same random bytes and the name of file to be read "flag.txt", like the previous challenge. But now, we need to put the correct value of the val so it can enter in the "if" condition of "main.c".
+
+*  This value is 0xFEFC2223 (the value in the "if"). Since it is an int pointer, we neeed to put the bytes backwards. In order words, we put "\x23\x22\xfc\xfe" in the middle of the string to be scanned by scanf. This is how exploit-example.py in debug mode looked like:
+
+![](https://i.imgur.com/NTlxeGs.png)
+
+* We runned and our strategy was correct- we obtained the content of flag.txt.
+
+![](https://i.imgur.com/eBui8mW.png)
+
+* We, asserted the ```DEBUG``` variable as False, in order to attack the exploit and obtained the value of the flag.
+
+![](https://i.imgur.com/BHszPfO.png)
