@@ -76,9 +76,8 @@ The difference between task 3B and 3A is in this one we have to change the secre
  
 ![](https://i.imgur.com/BbsP66U.png)
 
+![](https://i.imgur.com/MCGAj9i.png)
+
 * From this task we understand how printf() is used to acess or change memory from an attacked device, how it can be exploited and what cautions we need to have when using it.
 
 * We have also learned how an attacker can use the side effects of "%x", "%s", "%n" in a formatted string to his/her advantage performing an attack.
-
-
-![](https://i.imgur.com/MCGAj9i.png)
