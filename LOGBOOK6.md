@@ -76,8 +76,55 @@ The difference between task 3B and 3A is in this one we have to change the secre
  
 ![](https://i.imgur.com/BbsP66U.png)
 
-![](https://i.imgur.com/MCGAj9i.png)
-
 * From this task we understand how printf() is used to acess or change memory from an attacked device, how it can be exploited and what cautions we need to have when using it.
 
 * We have also learned how an attacker can use the side effects of "%x", "%s", "%n" in a formatted string to his/her advantage performing an attack.
+
+
+![](https://i.imgur.com/MCGAj9i.png)
+
+## CTF 
+ 
+### Challenge 1
+
+* In this task, we have to explore a vulnerability of format strings in order to create an exploit and obtain the challenge's flag. Firstly, we have to check what protections are activated. We used the command ```checksec program``` in order to obtain relevant information about that.
+
+![](https://i.imgur.com/fpPeFhn.png)
+
+* Comparing to the last week's tasks, we have now canaries and the and no PIE. The fact of not having PIE activated means that there is no randomness on the adresses on the executable.
+
+* Secondly, we had to answer this questions:
+
+1) In which code line is the vulnerability found?
+
+2) What can we do by taking advantage of the vulnerability?
+
+3) What is the funtionality that allow us to obatain the flag?
+
+* Answers:
+
+1) The vulnerability is at line 25 of "main.c", since has a ```scanf()``` that scans the bytes of the variable ```buffer```; however, the load_flag() function loads mote bytes than ```buffer``` contains. In addition of that, the "%32s" will only scan data if it fits the buffer.
+
+![](https://i.imgur.com/PKmCR3I.png)
+
+2) We this vulnerability, we can smash the execution stack and access values that we are not supposed to.
+
+3) If we use a format string and using the register where ```load_flag()``` is addressed, then, we might obtain the flag value.
+
+* After answering the questions, we started our process to otbtain the flag value:
+
+* First, we made some debugging to the program in order to obain the ```load_flag()``` register, thanks to the command ```gdb program``` in a terminal. Fortunately, we obtained the address of the register:
+
+![](https://i.imgur.com/p4y3L3v.png)
+
+* Then, we need to put the value of this register in the our "exploit_example.py". Since it is an integer, the execution stack reads it differently when compared to an array, as we concluded in the task of the previous week. So, we inverted the order of the bytes of the register 0x8049256 and inserted the register "\x60\xC0\x04\x08". Besides that, we needed to concatenate it to "-%s", so that we could we read the content of the register itself. We executed the exploit file in local mode and we could access the content of "flag.txt".
+
+![](https://i.imgur.com/HjzA73g.png)
+
+![](https://i.imgur.com/EPsVyCY.png)
+
+* This means we exploited the program successfully. So, we tried in the remote mode, by asserting the ```LOCAL``` variable as False and we obtained the flag value sucessfully.
+
+![](https://i.imgur.com/214uA47.png)
+
+![](https://i.imgur.com/7ikThKb.png)
