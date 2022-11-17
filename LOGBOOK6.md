@@ -133,6 +133,23 @@ The difference between task 3B and 3A is in this one we have to change the secre
 ### Challenge 2
 
 * This second challenge is the strongest version of our challenge 1. When we use checksec we saw the same restrictions from the first challenge.
+
+* Before making the exploit, we need to answer some questions first:
+
+1) In which code line is the vulnerability? What does the vulnerability allow us to do?
+
+2) Is the flag loaded to memory? Is there any functionality we can use to access the flag?
+
+3) To we need to do to unlock the functionality?
+
+* These are our answers:
+
+1) The bug is in line 12 of the "main.c". It is similar to the previous task- scanf only scans what fits in the buffer and is the same size of the key. This vulnerability can be explored to access the content of some register that contains sensitive data if the attack is made successfully.
+
+2) Yes, the key is loaded to the memory and we can access to its value by using the command ```p &key``` 
+
+3) In order to unlock the functionality, we need to use the debugger mode in order to do that, we use the command ```gdb program```.
+
 * So when we saw the code provided we notice the code doesn´t have a function that already opens our code, but if the key equals to 0*BEEF, we can run BASH and we can open it.
 
 ![](https://i.imgur.com/dc5nAlU.png)
@@ -148,3 +165,5 @@ Calculating A:
 * When we run the exploit_example.py we got the flag in the flag.txt:
 
 ![](https://i.imgur.com/X3WYBwl.png)
+
+
