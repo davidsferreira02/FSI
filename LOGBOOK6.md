@@ -87,7 +87,7 @@ The difference between task 3B and 3A is in this one we have to change the secre
  
 ### Challenge 1
 
-* In this task, we have to explore a vulnerability of format strings in order to create an exploit and obtain the challenge's flag. Firstly, we have to check what protections are activated. We used the command ```checksec program``` in order to obtain relevant information about that.
+* In this task, we has to explore a vulnerability of format strings in order to create an exploit and obtain the challenge's flag. Firstly, we have to check what protections are activated. We used the command ```checksec program``` in order to obtain relevant information about that.
 
 ![](https://i.imgur.com/fpPeFhn.png)
 
@@ -128,3 +128,23 @@ The difference between task 3B and 3A is in this one we have to change the secre
 ![](https://i.imgur.com/214uA47.png)
 
 ![](https://i.imgur.com/7ikThKb.png)
+
+
+### Challenge 2
+
+* This second challenge is the strongest version of our challenge 1. When we use checksec we saw the same restrictions from the first challenge.
+* So when we saw the code provided we notice the code doesn´t have a function that already opens our code, but if the key equals to 0*BEEF, we can run BASH and we can open it.
+
+![](https://i.imgur.com/dc5nAlU.png)
+
+* Now we run program with gdb and we find where the key is the located:
+
+Calculating A:
+
+* We know how to write our string: at first, we have to calculate A. To do this we know 0*BEEF=48879. We also knew that we have written 8 chars so far for our address, that left us with
+
+  48879-8=48871. This is the number we got to substitute 'A' with this value.
+ 
+* When we run the exploit_example.py we got the flag in the flag.txt:
+
+![](https://i.imgur.com/X3WYBwl.png)
