@@ -244,16 +244,20 @@ if __name__ == '__main__':
    main()
 ```
 
+* It should be noted that the value of n corresponds to the value of N obtained with the command ```netcat ctf-fsi.fe.up.pt 6001```
+
+![](https://i.imgur.com/uxX3VCN.png)
+
 * We ran the code and we obtained the plained the encrypted as output:
 
 ![](https://i.imgur.com/BV7VcNa.png)
 
-* However, this is not the real content of the message, it is encrypted in decimal. So, we used a tool in web to convert it to plain text. First, we need to convert it to hexadecimal and then from hexadecimal to plaintext:
+* However, this is not the real content of the message, it is encrypted in decimal. So, we used a tool in web to convert it to plain text. First, we need to convert it to hexadecimal and then to plaintext:
 
 ![](https://i.imgur.com/OD4LvEI.png)
 
 
-* And we obtained the flag successfully:
+* And we obtained the flag:
 
 ![](https://i.imgur.com/cFEA4It.png)
 
