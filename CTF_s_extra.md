@@ -17,7 +17,7 @@
 
 ![](https://i.imgur.com/lNQuRBl.png)
 
-* We discovered that this scrpit was exporting the content contained in "env" file of the "tmp" folder. We also knew that this folder contains files that are generated temporarily.
+* We discovered that this script was exporting the content contained in "env" file of the "tmp" folder. We also knew that this folder contains files that are generated temporarily.
 
 * We've also noticed that the script was being run periodically, since after some time, the commands were not working and terminated the connection with the server:
 
