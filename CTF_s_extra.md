@@ -11,7 +11,7 @@
 
 ![](https://i.imgur.com/6jK2H71.png)
 
-* We run cat main.c to see ans analysed main.c.We have a function main which verifies if the file flag.txt exists or not.If the file exists, it would print the flag and String "File exists"; else, the file only prints "Files doesn´t exist."
+* We ran ```cat main.c``` to see its content and analysed main.c. We discovered that it had a function main which verifies if the file flag.txt exists or not.If the file exists, it would print the flag and String "File exists"; else, the file only prints "Files doesn´t exist."
 
 * After that, we ran the command ```cat my_script.sh``` and we analysed its code:
 
